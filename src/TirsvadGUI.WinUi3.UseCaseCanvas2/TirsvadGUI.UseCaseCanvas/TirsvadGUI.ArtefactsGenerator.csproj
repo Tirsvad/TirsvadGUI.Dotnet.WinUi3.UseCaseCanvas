@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
+        <TargetPlatformMinVersion>10.0.22621.0</TargetPlatformMinVersion>
+        <RootNamespace>TirsvadGUI.ArtefactsGenerator</RootNamespace>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <Platforms>x86;x64;ARM64</Platforms>
+        <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+        <UseWinUI>true</UseWinUI>
+        <Nullable>enable</Nullable>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Emit generated files into a short path at the root of the drive that contains the solution (fall back to project drive) -->
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+
+        <!-- Resolve drive root: prefer SolutionDir (when building from solution), otherwise use project directory -->
+        <SolutionDriveRoot Condition="'$(SolutionDir)' != ''">$([System.IO.Path]::GetPathRoot('$(SolutionDir)'))</SolutionDriveRoot>
+        <SolutionDriveRoot Condition="'$(SolutionDriveRoot)' == ''">$([System.IO.Path]::GetPathRoot('$(MSBuildProjectDirectory)'))</SolutionDriveRoot>
+
+        <!-- Final output path: <DriveRoot>\gen\<ProjectName> (no trailing backslash) -->
+        <CompilerGeneratedFilesOutputPath>$([System.IO.Path]::Combine('$(SolutionDriveRoot)','gen','$(MSBuildProjectName)'))</CompilerGeneratedFilesOutputPath>
+
+        <!-- Keep an explicit destination property (points to same location by default) -->
+        <GeneratedFilesDestination>$(CompilerGeneratedFilesOutputPath)</GeneratedFilesDestination>
+    </PropertyGroup>
+
+    <!-- Ensure directory exists before build -->
+    <Target Name="EnsureCompilerGeneratedFilesOutputPath" BeforeTargets="BeforeBuild">
+        <MakeDir Directories="$(CompilerGeneratedFilesOutputPath)" Condition="'$(CompilerGeneratedFilesOutputPath)' != ''" />
+    </Target>
+
+    <ItemGroup>
+        <Manifest Include="$(ApplicationManifest)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6584" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251003001" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Mvvm\Pages\ViewModels\" />
+        <Folder Include="Mvvm\Windows\ViewModels\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Load the generator as an analyzer so Roslyn invokes it at compile time -->
+        <ProjectReference Include="..\..\TirsvadGUI.ArtefactsGenerator.Generators\TirsvadGUI.ArtefactsGenerator.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
+    <!-- Publish Properties -->
+    <PropertyGroup>
+        <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
+        <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
+        <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
+        <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
+        <SupportedOSPlatformVersion>10.0.22621.0</SupportedOSPlatformVersion>
+    </PropertyGroup>
+</Project>

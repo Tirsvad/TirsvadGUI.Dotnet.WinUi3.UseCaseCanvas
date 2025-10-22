@@ -1,7 +1,18 @@
-﻿# Contributing to TirsvadWeb.JwtAuth
+﻿# Contributing to TirsvadGUI.UseCaseCanvas
 
 Thank you for your interest in contributing! Your help is greatly appreciated.  
 This document outlines the process for contributing to the project.
+
+## Coding Guidelines
+- MVVM architecture
+- SOLID principles
+- Clean Code practices
+- Unit testing with msTest
+- Dependency Injection
+- Asynchronous programming with async/await
+- Error handling and logging
+- Consistent naming conventions
+- XML documentation for public members
 
 ## How Can I Contribute?
 
